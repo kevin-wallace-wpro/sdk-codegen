@@ -28,9 +28,6 @@ import type { FC } from 'react'
 import React from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import type { ApiModel, SpecList } from '@looker/sdk-codegen'
-import type { RunItSetter } from '@looker/run-it'
-import type { IEnvironmentAdaptor } from '@looker/extension-utils'
-import { OAuthScene } from '@looker/run-it'
 
 import {
   HomeScene,
@@ -45,46 +42,35 @@ import { diffPath } from '../utils'
 interface AppRouterProps {
   specKey: string
   specs: SpecList
-  spec: ApiModel
+  api: ApiModel
   toggleNavigation: (target?: boolean) => void
-  adaptor: IEnvironmentAdaptor
-  setVersionsUrl: RunItSetter
 }
 
 export const AppRouter: FC<AppRouterProps> = ({
-  spec,
+  api,
   specKey,
   specs,
   toggleNavigation,
-  adaptor,
-  setVersionsUrl,
-}) => {
-  return (
-    <Switch>
-      {/*<Redirect from="/" to={`/${specKey}/`} exact />*/}
-      {/*<Route path={`/${diffPath}/:l?/:r?`}>*/}
-      {/*  <DiffScene specs={specs} toggleNavigation={toggleNavigation} />*/}
-      {/*</Route>*/}
-      {/*<Route path="/:specKey/(methods|types)?" exact>*/}
-      {/*  <HomeScene api={api} />*/}
-      {/*</Route>*/}
-      {/*<Route path="/:specKey/methods/:methodTag" exact>*/}
-      {/*  <MethodTagScene api={api} />*/}
-      {/*</Route>*/}
-      {/*<Route path="/:specKey/methods/:methodTag/:methodName">*/}
-      {/*  <MethodScene*/}
-      {/*    api={api}*/}
-      {/*    adaptor={adaptor}*/}
-      {/*    setVersionsUrl={setVersionsUrl}*/}
-      {/*  />*/}
-      {/*</Route>*/}
-      {/*<Route path="/:specKey/types/:typeTag" exact>*/}
-      {/*  <TypeTagScene api={api} />*/}
-      {/*</Route>*/}
-      {/*<Route path="/:specKey/types/:typeTag/:typeName">*/}
-      {/*  <TypeScene api={api} />*/}
-      {/*</Route>*/}
-      <Route path="/oauth" component={OAuthScene} />
-    </Switch>
-  )
-}
+}) => (
+  <Switch>
+    <Redirect from="/" to={`/${specKey}/`} exact />
+    <Route path={`/${diffPath}/:l?/:r?`}>
+      <DiffScene specs={specs} toggleNavigation={toggleNavigation} />
+    </Route>
+    <Route path="/:specKey/(methods|types)?" exact>
+      <HomeScene api={api} />
+    </Route>
+    <Route path="/:specKey/methods/:methodTag" exact>
+      <MethodTagScene api={api} />
+    </Route>
+    <Route path="/:specKey/methods/:methodTag/:methodName">
+      <MethodScene api={api} />
+    </Route>
+    <Route path="/:specKey/types/:typeTag" exact>
+      <TypeTagScene api={api} />
+    </Route>
+    <Route path="/:specKey/types/:typeTag/:typeName">
+      <TypeScene api={api} />
+    </Route>
+  </Switch>
+)

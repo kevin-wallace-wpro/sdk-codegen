@@ -33,7 +33,7 @@ export interface IAuthAdaptor {
   get sdk(): IAPIMethods
   /** Method for authenticating against the API server. Auth mechanism is dependent on the authSession implementation
    * used for the sdk. */
-  login(): void
+  login(): Promise<boolean>
 }
 
 /**

@@ -26,7 +26,6 @@
 
 import type { FC } from 'react'
 import React, { useState, useEffect, useCallback } from 'react'
-import { useLocation } from 'react-router'
 import styled, { createGlobalStyle } from 'styled-components'
 import {
   Aside,
@@ -40,22 +39,20 @@ import {
 } from '@looker/components'
 import { FirstPage } from '@styled-icons/material/FirstPage'
 import { LastPage } from '@styled-icons/material/LastPage'
-
+import type { IApixAdaptor } from '@looker/run-it'
 import {
   registerEnvAdaptor,
   unregisterEnvAdaptor,
 } from '@looker/extension-utils'
 import { useSelector } from 'react-redux'
-import { OAuthScene } from '@looker/run-it'
-import type { IApixAdaptor } from './utils'
-import { oAuthPath } from './utils'
+
 import {
   Header,
   SideNav,
   ErrorBoundary,
-  Loader,
   SelectorContainer,
   HEADER_TOGGLE_LABEL,
+  Loader,
 } from './components'
 import { AppRouter } from './routes'
 import { apixFilesHost } from './utils/lodeUtils'
@@ -64,9 +61,11 @@ import {
   useSettingStoreState,
   useLodeActions,
   useLodesStoreState,
+  useSpecActions,
+  useSpecStoreState,
+  selectCurrentSpec,
+  selectSpecs,
 } from './state'
-import { useSpecActions, useSpecStoreState } from './state/specs/slice'
-import { selectCurrentSpec, selectSpecs } from './state/specs'
 
 export interface ApiExplorerProps {
   adaptor: IApixAdaptor
@@ -88,10 +87,9 @@ export const ApiExplorer: FC<ApiExplorerProps> = ({
   const { initialized } = useSpecStoreState()
   const specs = useSelector(selectSpecs)
   const spec = useSelector(selectCurrentSpec)
-  // const { initLodesAction } = useLodeActions()
-  // const { initSettingsAction } = useSettingActions()
+  const { initLodesAction } = useLodeActions()
+  const { initSettingsAction } = useSettingActions()
   const { initSpecsAction } = useSpecActions()
-  // const location = useLocation()
 
   const [hasNavigation, setHasNavigation] = useState(true)
   const toggleNavigation = (target?: boolean) =>
@@ -108,13 +106,10 @@ export const ApiExplorer: FC<ApiExplorerProps> = ({
   useEffect(() => {
     adaptor.login()
     initSpecsAction()
+    initSettingsAction()
+    initLodesAction({ examplesLodeUrl, declarationsLodeUrl })
     return () => unregisterEnvAdaptor()
   }, [])
-
-  // useEffect(() => {
-  // initSettingsAction()
-  // initLodesAction({ examplesLodeUrl, declarationsLodeUrl })
-  // }, [spec?.key])
 
   useEffect(() => {
     if (headless) {
@@ -135,83 +130,71 @@ export const ApiExplorer: FC<ApiExplorerProps> = ({
         loadGoogleFonts={themeOverrides.loadGoogleFonts}
         themeCustomizations={themeOverrides.themeCustomizations}
       >
-        <AppRouter
-          specKey={spec?.key}
-          spec={spec?.api}
-          specs={specs}
-          toggleNavigation={toggleNavigation}
-          adaptor={adaptor}
-        />
         {!initialized ? (
           <Loader message="Initializing" themeOverrides={themeOverrides} />
         ) : (
-          <h1>Loaded...</h1>
-          //     <ErrorBoundary logError={adaptor.logError.bind(adaptor)}>
-          //       <Page style={{ overflow: 'hidden' }}>
-          //         {!headless && (
-          //           <Header spec={spec} toggleNavigation={toggleNavigation} />
-          //         )}
-          //         <Layout hasAside height="100%">
-          //           <AsideBorder
-          //             borderRight
-          //             isOpen={hasNavigation}
-          //             headless={headless}
-          //           >
-          //             {headless && (
-          //               <>
-          //                 <Space
-          //                   alignItems="center"
-          //                   py="u3"
-          //                   px={hasNavigation ? 'u5' : '0'}
-          //                   justifyContent={
-          //                     hasNavigation ? 'space-between' : 'center'
-          //                   }
-          //                 >
-          //                   {hasNavigation && (
-          //                     <Heading
-          //                       as="h2"
-          //                       fontSize="xsmall"
-          //                       fontWeight="bold"
-          //                       color="text2"
-          //                     >
-          //                       API DOCUMENTATION
-          //                     </Heading>
-          //                   )}
-          //                   <IconButton
-          //                     size="xsmall"
-          //                     shape="round"
-          //                     icon={hasNavigation ? <FirstPage /> : <LastPage />}
-          //                     label={HEADER_TOGGLE_LABEL}
-          //                     onClick={() => toggleNavigation()}
-          //                   />
-          //                 </Space>
-          //                 {hasNavigation && (
-          //                   <>
-          //                     <Divider mb="u3" appearance="light" />
-          //                     <SelectorContainer
-          //                       spec={spec}
-          //                       ml="large"
-          //                       mr="large"
-          //                     />
-          //                   </>
-          //                 )}
-          //               </>
-          //             )}
-          //             {hasNavigation && <SideNav headless={headless} spec={spec} />}
-          //           </AsideBorder>
-          //           {oauthReturn && <OAuthScene />}
-          //           {!oauthReturn && spec.api && (
-          //             <AppRouter
-          //               api={spec.api!}
-          //               specKey={spec.key}
-          //               specs={specs}
-          //               toggleNavigation={toggleNavigation}
-          //               adaptor={adaptor}
-          //             />
-          //           )}
-          //         </Layout>
-          //       </Page>
-          //     </ErrorBoundary>
+          <ErrorBoundary logError={adaptor.logError.bind(adaptor)}>
+            <Page style={{ overflow: 'hidden' }}>
+              {!headless && (
+                <Header spec={spec} toggleNavigation={toggleNavigation} />
+              )}
+              <Layout hasAside height="100%">
+                <AsideBorder
+                  borderRight
+                  isOpen={hasNavigation}
+                  headless={headless}
+                >
+                  {headless && (
+                    <>
+                      <Space
+                        alignItems="center"
+                        py="u3"
+                        px={hasNavigation ? 'u5' : '0'}
+                        justifyContent={
+                          hasNavigation ? 'space-between' : 'center'
+                        }
+                      >
+                        {hasNavigation && (
+                          <Heading
+                            as="h2"
+                            fontSize="xsmall"
+                            fontWeight="bold"
+                            color="text2"
+                          >
+                            API DOCUMENTATION
+                          </Heading>
+                        )}
+                        <IconButton
+                          size="xsmall"
+                          shape="round"
+                          icon={hasNavigation ? <FirstPage /> : <LastPage />}
+                          label={HEADER_TOGGLE_LABEL}
+                          onClick={() => toggleNavigation()}
+                        />
+                      </Space>
+                      {hasNavigation && (
+                        <>
+                          <Divider mb="u3" appearance="light" />
+                          <SelectorContainer
+                            spec={spec}
+                            ml="large"
+                            mr="large"
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                  {hasNavigation && <SideNav headless={headless} spec={spec} />}
+                </AsideBorder>
+                <AppRouter
+                  specKey={spec.key}
+                  api={spec.api!}
+                  specs={specs}
+                  toggleNavigation={toggleNavigation}
+                />
+              </Layout>
+            </Page>
+          </ErrorBoundary>
         )}
       </ComponentsProvider>
       {!headless && <BodyOverride />}

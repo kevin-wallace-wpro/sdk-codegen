@@ -42,9 +42,8 @@ import {
   Tooltip,
 } from '@looker/components'
 import { CodeCopy } from '@looker/code-editor'
-import { getEnvAdaptor } from '@looker/extension-utils'
 
-import type { RunItSetter, RunItValues } from '../..'
+import type { RunItValues } from '../..'
 import {
   CollapserCard,
   RunItFormKey,
@@ -52,13 +51,10 @@ import {
   DarkSpan,
   readyToLogin,
   RunItNoConfig,
+  getApixAdaptor,
 } from '../..'
 import type { ILoadedSpecs } from './configUtils'
-import {
-  RunItConfigKey,
-  validateUrl,
-  loadSpecsFromVersions,
-} from './configUtils'
+import { RunItConfigKey, validateUrl } from './configUtils'
 
 const POSITIVE: MessageBarIntent = 'positive'
 
@@ -72,12 +68,11 @@ const defaultFieldValues: IFieldValues = {
   /** not currently used but declared for property compatibility for ILoadedSpecs */
   headless: false,
   specs: {},
-  error: '',
+  fetchResult: '',
   fetchIntent: POSITIVE,
 }
 
 interface ConfigFormProps {
-  setVersionsUrl: RunItSetter
   /** A collection type react state to store path, query and body parameters as entered by the user  */
   requestContent: RunItValues
   /** Title for the config form */
@@ -87,7 +82,6 @@ interface ConfigFormProps {
 }
 
 export const ConfigForm: FC<ConfigFormProps> = ({
-  setVersionsUrl,
   title,
   requestContent,
   setHasConfig,
@@ -105,7 +99,8 @@ export const ConfigForm: FC<ConfigFormProps> = ({
   "enabled": true
 }
 `
-  const sdk = getEnvAdaptor().sdk
+  const adaptor = getApixAdaptor()
+  const sdk = adaptor.sdk
   // See https://codesandbox.io/s/youthful-surf-0g27j?file=/src/index.tsx for a prototype from Luke
   // TODO see about useReducer to clean this up a bit more
   title = title || 'RunIt Configuration'
@@ -174,7 +169,10 @@ export const ConfigForm: FC<ConfigFormProps> = ({
     try {
       updateMessage('inform', '')
       const versionsUrl = `${fields.baseUrl}/versions`
-      const { webUrl, baseUrl } = await loadSpecsFromVersions(versionsUrl)
+      // TODO: rethink how to verify. perhaps this should be a simple fetch.
+      // const { webUrl, baseUrl } = await adaptor.fetchSpecList(versionsUrl)
+      const baseUrl = versionsUrl
+      const webUrl = 'bar'
       if (!baseUrl || !webUrl) {
         fetchError('Invalid server configuration')
       } else {
@@ -186,7 +184,6 @@ export const ConfigForm: FC<ConfigFormProps> = ({
           localStorage.setItem(RunItConfigKey, JSON.stringify(data))
           if (setHasConfig) setHasConfig(true)
           setSaved(data)
-          setVersionsUrl(versionsUrl)
           updateMessage(POSITIVE, `Saved ${webUrl} as OAuth server`)
         }
       }
@@ -264,7 +261,7 @@ export const ConfigForm: FC<ConfigFormProps> = ({
       localStorage.setItem(RunItFormKey, JSON.stringify(requestContent))
     }
     // This will set storage variables and return to OAuthScene when successful
-    await sdk.authSession.login()
+    await adaptor.login()
   }
 
   return (

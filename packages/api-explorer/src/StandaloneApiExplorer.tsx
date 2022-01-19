@@ -27,51 +27,21 @@
 import type { FC } from 'react'
 import React, { useState } from 'react'
 import {
-  fallbackFetch,
-  fullify,
-  funFetch,
+  ApixAdaptor,
   initRunItSdk,
-  RunItConfigKey,
-  RunItNoConfig,
+  OAuthScene,
   RunItProvider,
 } from '@looker/run-it'
 import { Provider } from 'react-redux'
-import { BrowserAdaptor } from '@looker/extension-utils'
-import type { IAPIMethods } from '@looker/sdk-rtl'
-import type { SpecItem, SpecList } from '@looker/sdk-codegen'
-import { getSpecsFromVersions } from '@looker/sdk-codegen'
+import { useLocation } from 'react-router'
 
 import { ApiExplorer } from './ApiExplorer'
 import { store } from './state'
-import type { IApixAdaptor } from './utils'
+import { oAuthPath } from './utils'
 
 export interface StandaloneApiExplorerProps {
   headless?: boolean
   versionsUrl: string
-}
-
-export class ApixAdaptor extends BrowserAdaptor implements IApixAdaptor {
-  constructor(sdk: IAPIMethods, private readonly fallbackVersionsUrl: string) {
-    super(sdk)
-  }
-
-  async fetchSpecList(): Promise<SpecList> {
-    // TODO: make this throw on failure
-    const data = await this.localStorageGetItem(RunItConfigKey)
-    const config = data ? JSON.parse(data) : RunItNoConfig
-    const url = config.base_url
-      ? `${config.base_url}/versions`
-      : `${this.fallbackVersionsUrl}/versions.json`
-    const versions = await this.sdk.authSession.transport.rawRequest('GET', url)
-    const specs = await getSpecsFromVersions(JSON.parse(versions.body))
-    return specs
-  }
-
-  async fetchSpec(spec: SpecItem): Promise<SpecItem> {
-    spec.specURL = fullify(spec.specURL!, origin)
-    spec.api = await fallbackFetch(spec, funFetch)
-    return spec
-  }
 }
 
 export const StandaloneApiExplorer: FC<StandaloneApiExplorerProps> = ({
@@ -80,11 +50,17 @@ export const StandaloneApiExplorer: FC<StandaloneApiExplorerProps> = ({
   const [browserAdaptor] = useState(
     new ApixAdaptor(initRunItSdk(), window.origin)
   )
+  const location = useLocation()
+  const oauthReturn = location.pathname === `/${oAuthPath}`
 
   return (
     <Provider store={store}>
       <RunItProvider basePath="/api/4.0">
-        <ApiExplorer adaptor={browserAdaptor} headless={headless} />
+        {oauthReturn ? (
+          <OAuthScene adaptor={browserAdaptor} />
+        ) : (
+          <ApiExplorer adaptor={browserAdaptor} headless={headless} />
+        )}
       </RunItProvider>
     </Provider>
   )

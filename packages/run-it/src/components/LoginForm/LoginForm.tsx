@@ -27,7 +27,7 @@
 import type { BaseSyntheticEvent, FC } from 'react'
 import React from 'react'
 import { Button, Tooltip } from '@looker/components'
-import { getEnvAdaptor } from '@looker/extension-utils'
+import { getApixAdaptor } from '../..'
 
 import { RunItFormKey } from '../ConfigForm'
 import type { RunItValues } from '../..'
@@ -39,8 +39,11 @@ interface LoginFormProps {
 export const readyToLogin =
   'OAuth is configured but your browser session is not authenticated. Click Login to enable RunIt.'
 
+export const notReadyToLogin =
+  'OAuth is not configured. Configure it to be able to Login.'
+
 export const LoginForm: FC<LoginFormProps> = ({ requestContent }) => {
-  const adaptor = getEnvAdaptor()
+  const adaptor = getApixAdaptor()
 
   const handleLogin = async (e: BaseSyntheticEvent) => {
     e.preventDefault()
@@ -48,11 +51,13 @@ export const LoginForm: FC<LoginFormProps> = ({ requestContent }) => {
       adaptor.localStorageSetItem(RunItFormKey, JSON.stringify(requestContent))
     }
     // This will set storage variables and return to OAuthScene when successful
-    await adaptor.sdk.authSession.login()
+    await adaptor.login()
   }
 
   return (
-    <Tooltip content={readyToLogin}>
+    <Tooltip
+      content={adaptor.authIsConfigured() ? readyToLogin : notReadyToLogin}
+    >
       <Button onClick={handleLogin}>Login</Button>
     </Tooltip>
   )

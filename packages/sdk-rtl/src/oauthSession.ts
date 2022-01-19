@@ -149,7 +149,6 @@ export class OAuthSession extends AuthSession {
       if (this.reentry) {
         console.log('Deja vu')
       } else if (!this.returnUrl) {
-        console.log('Pre Oauth...')
         // OAuth has not been initiated
         const authUrl = await this.createAuthCodeRequestUrl(
           'cors_api',
@@ -161,7 +160,6 @@ export class OAuthSession extends AuthSession {
         window.location.href = authUrl
       } else {
         this.reentry = true
-        console.log('After Oauth...')
         // If return URL is stored, we must be coming back from an OAuth request
         // so release the stored return url at the start of the redemption
         this.returnUrl = null
@@ -183,7 +181,8 @@ export class OAuthSession extends AuthSession {
         }
         await this.redeemAuthCode(code)
       }
-      return await this.getToken()
+      const token = await this.getToken()
+      return token
     }
     return this.activeToken
   }

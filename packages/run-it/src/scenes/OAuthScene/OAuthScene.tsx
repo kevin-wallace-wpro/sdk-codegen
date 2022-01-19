@@ -28,32 +28,46 @@ import type { FC } from 'react'
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import type { BrowserSession } from '@looker/sdk-rtl'
-import { getEnvAdaptor } from '@looker/extension-utils'
+import { ComponentsProvider } from '@looker/components'
 
+import type { IApixAdaptor } from '../../utils'
 import { Loading } from '../../components'
+
+interface OAuthSceneProps {
+  adaptor: IApixAdaptor
+}
 
 /**
  * OAuth scene for sdk session handling aed redirection to OAuth flow initiation
  * route
  */
-export const OAuthScene: FC = () => {
+export const OAuthScene: FC<OAuthSceneProps> = ({ adaptor }) => {
   const history = useHistory()
-  const adaptor = getEnvAdaptor()
   const authSession = adaptor.sdk.authSession as BrowserSession
   const oldUrl = authSession.returnUrl || `/`
 
   useEffect(() => {
+    // check if token is present
+    // if no token, error
+    // otherwise, success
+
     const maybeLogin = async () => {
-      await adaptor.login()
-      history.push(oldUrl)
+      const token = await adaptor.login()
+      if (token) history.push(oldUrl)
     }
     maybeLogin()
   }, [])
 
+  const themeOverrides = adaptor.themeOverrides()
   return (
-    <Loading
-      loading={true}
-      message={`Returning to ${oldUrl} after OAuth login ...`}
-    />
+    <ComponentsProvider
+      loadGoogleFonts={themeOverrides.loadGoogleFonts}
+      themeCustomizations={themeOverrides.themeCustomizations}
+    >
+      <Loading
+        loading={true}
+        message={`Returning to ${oldUrl} after OAuth login ...`}
+      />
+    </ComponentsProvider>
   )
 }

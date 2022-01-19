@@ -25,7 +25,7 @@
  */
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
-import type { ApiModel, SpecList } from '@looker/sdk-codegen'
+import type { ApiModel, SpecItem, SpecList } from '@looker/sdk-codegen'
 import { createSliceHooks } from '@looker/redux'
 
 import { saga } from './sagas'

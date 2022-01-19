@@ -36,7 +36,10 @@ export class BrowserAuthAdaptor implements IAuthAdaptor {
   constructor(public readonly sdk: IAPIMethods) {}
 
   async login() {
-    await this.sdk.authSession.login()
+    console.log('logging in')
+    const token = await this.sdk.authSession.login()
+    const result = !!token
+    return result
   }
 }
 
