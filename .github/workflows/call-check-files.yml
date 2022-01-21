@@ -33,3 +33,12 @@ jobs:
         if: needs.checkfiles.outputs.apix == 'true'
         run: |
           echo "apix: ${{ needs.checkfiles.outputs.apix }}"
+
+  work2:
+    runs-on: ubuntu-latest
+    needs: checkfiles
+    if: needs.checkfiles.outputs.codegen == 'true'
+    steps:
+      - name: Outputs
+        run: |
+          echo "Codegen is true"
