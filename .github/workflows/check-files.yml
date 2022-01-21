@@ -1,0 +1,66 @@
+name: Test File Patterns
+on:
+  push:
+    branches:
+      - drstrangelove/github-actions
+
+jobs:
+  checkfiles:
+    runs-on: ubuntu-latest
+    outputs:
+      apix: ${{ steps.filter.outputs.apix }}
+      codegen: ${{ steps.filter.outputs.codegen }}
+      python: ${{ steps.filter.outputs.python }}
+      resources: ${{ steps.filter.outputs.resources }}
+      tssdk: ${{ steps.filter.outputs.tssdk }}
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v2
+
+      - uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+        # head: optional head commit SHA, default to ${{ github.event.pull_request.head.sha || github.sha }}
+        # base: optional base commit SHA, default to ${{ github.event.pull_request.base.sha }}
+        # or HEAD^ if not triggered by pull_request
+
+        # filter rules in YAML format
+        # <rule-name>:
+        #  - <glob expression>
+          filters: |
+            apix:
+              - packages/code-editor/**
+              - packages/run-it/**
+              - packages/api-explorer/**
+              - packages/extension-api-explorer/**
+              - packages/extension-utils/**
+            codegen:
+              - packages/sdk-codegen/**
+              - packages/sdk-codegen-utils/**
+              - packages/sdk-codegen-scripts/**
+            python:
+              - python/**
+            resources:
+              - bin/looker-resources-index/**
+              - docs/resources/**
+            tssdk:
+              - packages/sdk/**
+              - packages/sdk-rtl/**
+              - packages/sdk-node/**
+              - packages/extension-sdk/**
+              - packages/extension-sdk-react/**
+              - packages/extension-utils/**
+      - run: echo "${{ toJSON(steps.filter.outputs) }}"
+  work:
+    runs-on: ubuntu-latest
+    needs: checkfiles
+    # if: !contains(needs.checkfiles.outputs.status, 'failure')
+    steps:
+      - name: Outputs
+        run: |
+          echo "${{ toJSON(needs.checkfiles.outputs) }}"
+          echo "apix: ${{ needs.checkfiles.outputs.apix }}"
+          echo "codegen: ${{ needs.checkfiles.outputs.codegen }}"
+          echo "python: ${{ needs.checkfiles.outputs.python }}"
+          echo "resources: ${{ needs.checkfiles.outputs.resources }}"
+          echo "tssdk: ${{ needs.checkfiles.outputs.tssdk }}"
