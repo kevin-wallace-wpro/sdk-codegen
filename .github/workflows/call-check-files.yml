@@ -15,10 +15,17 @@ jobs:
     steps:
       - name: Outputs
         run: |
-          echo "${{ toJSON(needs.checkfiles.outputs) }}"
+          echo "${{ needs.checkfiles.outputs.filters }}"
           echo "apix: ${{ needs.checkfiles.outputs.apix }}"
           echo "codegen: ${{ needs.checkfiles.outputs.codegen }}"
           echo "hackathon: ${{ needs.checkfiles.outputs.hackathon }}"
           echo "python: ${{ needs.checkfiles.outputs.python }}"
           echo "resources: ${{ needs.checkfiles.outputs.resources }}"
           echo "tssdk: ${{ needs.checkfiles.outputs.tssdk }}"
+          echo "Check value access from filters JSON"
+          echo "apix: ${{ fromJSON(needs.checkfiles.outputs.filters).apix }}"
+          echo "codegen: ${{ fromJSON(needs.checkfiles.outputs.filters).codegen }}"
+          echo "hackathon: ${{ fromJSON(needs.checkfiles.outputs.filters).hackathon }}"
+          echo "python: ${{ fromJSON(needs.checkfiles.outputs.filters).python }}"
+          echo "resources: ${{ fromJSON(needs.checkfiles.outputs.filters).resources }}"
+          echo "tssdk: ${{ fromJSON(needs.checkfiles.outputs.filters).tssdk }}"

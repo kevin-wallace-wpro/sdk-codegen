@@ -1,6 +1,28 @@
 name: Reusable File Patterns
 on:
   workflow_call:
+    outputs:
+      filters:
+        description: "The full output as a JSON"
+        value: ${{ jobs.checkfiles.outputs.filters }}
+      apix:
+        description: "The value of the apix filter"
+        value: ${{ jobs.checkfiles.outputs.apix }}
+      codegen:
+        description: "The value of the codegen filter"
+        value: ${{ jobs.checkfiles.outputs.codegen }}
+      hackathon:
+        description: "The value of the hackathon filter"
+        value: ${{ jobs.checkfiles.outputs.hackathon }}
+      python:
+        description: "The value of the python filter"
+        value: ${{ jobs.checkfiles.outputs.python }}
+      resources:
+        description: "The value of the resources filter"
+        value: ${{ jobs.checkfiles.outputs.resources }}
+      tssdk:
+        description: "The value of the tssdk filter"
+        value: ${{ jobs.checkfiles.outputs.tssdk }}
 
 jobs:
   checkfiles:
