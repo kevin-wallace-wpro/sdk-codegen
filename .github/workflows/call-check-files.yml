@@ -29,3 +29,7 @@ jobs:
           echo "python: ${{ fromJSON(needs.checkfiles.outputs.filters).python }}"
           echo "resources: ${{ fromJSON(needs.checkfiles.outputs.filters).resources }}"
           echo "tssdk: ${{ fromJSON(needs.checkfiles.outputs.filters).tssdk }}"
+      - name: Check
+        if: needs.checkfiles.outputs.apix == 'true'
+        run: |
+          echo "apix: ${{ needs.checkfiles.outputs.apix }}"
