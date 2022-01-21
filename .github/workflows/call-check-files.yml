@@ -1,0 +1,24 @@
+name: Test Callable File Patterns
+on:
+  push:
+    branches:
+      - drstrangelove/github-actions
+
+jobs:
+  checkfiles:
+    uses: looker-open-source/sdk-codegen/.github/workflows/check-files.yml@drstrangelove/github-actions
+
+  work:
+    runs-on: ubuntu-latest
+    needs: checkfiles
+    # if: needs.checkfiles.outputs.codegen
+    steps:
+      - name: Outputs
+        run: |
+          echo "${{ toJSON(needs.checkfiles.outputs) }}"
+          echo "apix: ${{ needs.checkfiles.outputs.apix }}"
+          echo "codegen: ${{ needs.checkfiles.outputs.codegen }}"
+          echo "hackathon: ${{ needs.checkfiles.outputs.hackathon }}"
+          echo "python: ${{ needs.checkfiles.outputs.python }}"
+          echo "resources: ${{ needs.checkfiles.outputs.resources }}"
+          echo "tssdk: ${{ needs.checkfiles.outputs.tssdk }}"

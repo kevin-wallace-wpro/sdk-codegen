@@ -24,6 +24,6 @@
 
  */
 export * from './ApiExplorer'
+export * from './state'
 export * from './StandaloneApiExplorer'
 export * from './components'
-export * from './state'

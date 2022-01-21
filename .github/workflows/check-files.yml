@@ -1,18 +1,19 @@
-name: Test File Patterns
+name: Reusable File Patterns
 on:
-  push:
-    branches:
-      - drstrangelove/github-actions
+  workflow_call:
 
 jobs:
   checkfiles:
     runs-on: ubuntu-latest
     outputs:
+      filters: ${{ toJSON(steps.filter.outputs) }}
       apix: ${{ steps.filter.outputs.apix }}
       codegen: ${{ steps.filter.outputs.codegen }}
+      hackathon: ${{ steps.filter.outputs.hackathon }}
       python: ${{ steps.filter.outputs.python }}
       resources: ${{ steps.filter.outputs.resources }}
       tssdk: ${{ steps.filter.outputs.tssdk }}
+
     steps:
       - name: Repo Checkout
         uses: actions/checkout@v2
@@ -38,6 +39,9 @@ jobs:
               - packages/sdk-codegen/**
               - packages/sdk-codegen-utils/**
               - packages/sdk-codegen-scripts/**
+            hackathon:
+              - packages/wholly-sheet/**
+              - packages/hackathon/**
             python:
               - python/**
             resources:
@@ -50,17 +54,11 @@ jobs:
               - packages/extension-sdk/**
               - packages/extension-sdk-react/**
               - packages/extension-utils/**
-      - run: echo "${{ toJSON(steps.filter.outputs) }}"
-  work:
-    runs-on: ubuntu-latest
-    needs: checkfiles
-    # if: !contains(needs.checkfiles.outputs.status, 'failure')
-    steps:
-      - name: Outputs
-        run: |
-          echo "${{ toJSON(needs.checkfiles.outputs) }}"
-          echo "apix: ${{ needs.checkfiles.outputs.apix }}"
-          echo "codegen: ${{ needs.checkfiles.outputs.codegen }}"
-          echo "python: ${{ needs.checkfiles.outputs.python }}"
-          echo "resources: ${{ needs.checkfiles.outputs.resources }}"
-          echo "tssdk: ${{ needs.checkfiles.outputs.tssdk }}"
+      - run: |
+          echo "${{ toJSON(steps.filter.outputs) }}"
+          echo "apix: ${{ steps.filter.outputs.apix }}"
+          echo "codegen: ${{ steps.filter.outputs.codegen }}"
+          echo "hackathon: ${{ steps.filter.outputs.hackathon }}"
+          echo "python: ${{ steps.filter.outputs.python }}"
+          echo "resources: ${{ steps.filter.outputs.resources }}"
+          echo "tssdk: ${{ steps.filter.outputs.tssdk }}"
