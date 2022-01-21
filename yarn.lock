@@ -2351,17 +2351,6 @@
     prettier "^2.3.1"
     typescript "4.4.2"
 
-"@looker/extension-utils@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@looker/extension-utils/-/extension-utils-0.1.3.tgz#770ed5881ee63985813abac475bdb6d58953a0e4"
-  integrity sha512-9W80uyt1naRseZC31zP8GGc5RXCOoS5ib7xncMxtbT+SG+o6MwF3bQRwG52aZM3ef2ugedi7+gOeWbbTFO8zfQ==
-  dependencies:
-    "@looker/components" "^2.8.1"
-    "@looker/extension-sdk" "^21.20.0"
-    "@looker/extension-sdk-react" "^21.20.0"
-    "@looker/sdk-rtl" "^21.3.1"
-    react "^16.13.1"
-
 "@looker/icons@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@looker/icons/-/icons-1.5.3.tgz#0815625b7d9b28409b4edd8714a5b93d5f17e267"
