@@ -25,7 +25,7 @@
  */
 
 import type { FC } from 'react'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import type { BrowserSession } from '@looker/sdk-rtl'
 import { ComponentsProvider } from '@looker/components'
@@ -45,15 +45,16 @@ export const OAuthScene: FC<OAuthSceneProps> = ({ adaptor }) => {
   const history = useHistory()
   const authSession = adaptor.sdk.authSession as BrowserSession
   const oldUrl = authSession.returnUrl || `/`
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    // check if token is present
-    // if no token, error
-    // otherwise, success
-
     const maybeLogin = async () => {
       const token = await adaptor.login()
-      if (token) history.push(oldUrl)
+      if (token) {
+        history.push(oldUrl)
+      } else {
+        setError(true)
+      }
     }
     maybeLogin()
   }, [])
@@ -64,10 +65,14 @@ export const OAuthScene: FC<OAuthSceneProps> = ({ adaptor }) => {
       loadGoogleFonts={themeOverrides.loadGoogleFonts}
       themeCustomizations={themeOverrides.themeCustomizations}
     >
-      <Loading
-        loading={true}
-        message={`Returning to ${oldUrl} after OAuth login ...`}
-      />
+      {!error ? (
+        <Loading
+          loading={true}
+          message={`Returning to ${oldUrl} after OAuth login ...`}
+        />
+      ) : (
+        'Failed to login'
+      )}
     </ComponentsProvider>
   )
 }

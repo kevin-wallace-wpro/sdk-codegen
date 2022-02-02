@@ -25,7 +25,7 @@
  */
 
 import type { FC } from 'react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ApixAdaptor,
   initRunItSdk,
@@ -52,6 +52,11 @@ export const StandaloneApiExplorer: FC<StandaloneApiExplorerProps> = ({
   )
   const location = useLocation()
   const oauthReturn = location.pathname === `/${oAuthPath}`
+  console.log(`pathname = ${location.pathname}, oauthReturn = ${oauthReturn}`)
+  useEffect(() => {
+    const login = async () => await browserAdaptor.login()
+    login()
+  }, [])
 
   return (
     <Provider store={store}>

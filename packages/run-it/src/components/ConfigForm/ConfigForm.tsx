@@ -165,30 +165,23 @@ export const ConfigForm: FC<ConfigFormProps> = ({
   }
 
   const updateForm = async (_e: BaseSyntheticEvent, save: boolean) => {
-    // e.preventDefault()
+    updateMessage('inform', '')
+    const versionsUrl = `${fields.baseUrl}/versions`
     try {
-      updateMessage('inform', '')
-      const versionsUrl = `${fields.baseUrl}/versions`
-      // TODO: rethink how to verify. perhaps this should be a simple fetch.
-      // const { webUrl, baseUrl } = await adaptor.fetchSpecList(versionsUrl)
-      const baseUrl = versionsUrl
-      const webUrl = 'bar'
-      if (!baseUrl || !webUrl) {
-        fetchError('Invalid server configuration')
-      } else {
-        updateFields({ [BASE_URL]: baseUrl, [WEB_URL]: webUrl })
-        updateMessage(POSITIVE, 'Configuration is valid')
-        if (save) {
-          const data = { base_url: baseUrl, looker_url: webUrl }
-          // TODO: replace when redux is introduced to run it
-          localStorage.setItem(RunItConfigKey, JSON.stringify(data))
-          if (setHasConfig) setHasConfig(true)
-          setSaved(data)
-          updateMessage(POSITIVE, `Saved ${webUrl} as OAuth server`)
-        }
+      const { web_server_url: webUrl, api_server_url: baseUrl } =
+        await adaptor.verifyConfig(versionsUrl)
+      updateFields({ [BASE_URL]: baseUrl, [WEB_URL]: webUrl })
+      updateMessage(POSITIVE, 'Configuration is valid')
+      if (save) {
+        const data = { base_url: baseUrl, looker_url: webUrl }
+        // TODO: replace when redux is introduced to run it
+        localStorage.setItem(RunItConfigKey, JSON.stringify(data))
+        if (setHasConfig) setHasConfig(true)
+        setSaved(data)
+        updateMessage(POSITIVE, `Saved ${webUrl} as OAuth server`)
       }
-    } catch (err: any) {
-      fetchError(err.message)
+    } catch (e: any) {
+      fetchError(e.message)
     }
   }
 

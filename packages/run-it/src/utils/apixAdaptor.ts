@@ -26,7 +26,7 @@
 import type { IEnvironmentAdaptor } from '@looker/extension-utils'
 import { BrowserAdaptor, getEnvAdaptor } from '@looker/extension-utils'
 import type { IAPIMethods } from '@looker/sdk-rtl'
-import type { SpecItem, SpecList } from '@looker/sdk-codegen'
+import type { ILookerVersions, SpecItem, SpecList } from '@looker/sdk-codegen'
 import { getSpecsFromVersions } from '@looker/sdk-codegen'
 import {
   fallbackFetch,
@@ -40,6 +40,7 @@ export interface IApixAdaptor extends IEnvironmentAdaptor {
   authIsConfigured(): boolean
   fetchSpecList(versionsUrl?: string): Promise<SpecList>
   fetchSpec(spec: SpecItem): Promise<SpecItem>
+  verifyConfig(versionsUrl: string): Promise<ILookerVersions>
 }
 
 export const getApixAdaptor = () => getEnvAdaptor() as IApixAdaptor
@@ -58,8 +59,18 @@ export class ApixAdaptor extends BrowserAdaptor implements IApixAdaptor {
     return config.base_url !== '' && config.looker_url !== ''
   }
 
+  async verifyConfig(versionsUrl: string): Promise<ILookerVersions> {
+    let result
+    try {
+      const response = await fetch(versionsUrl)
+      result = (await response.json()) as ILookerVersions
+    } catch {
+      throw new Error('Invalid server configuration')
+    }
+    return result
+  }
+
   async fetchSpecList(versionsUrl?: string): Promise<SpecList> {
-    // TODO: make this throw on failure
     const data = await this.localStorageGetItem(RunItConfigKey)
     const config = data ? JSON.parse(data) : RunItNoConfig
     let url: string

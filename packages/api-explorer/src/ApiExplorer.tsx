@@ -104,7 +104,6 @@ export const ApiExplorer: FC<ApiExplorerProps> = ({
   registerEnvAdaptor(adaptor)
 
   useEffect(() => {
-    adaptor.login()
     initSpecsAction()
     initSettingsAction()
     initLodesAction({ examplesLodeUrl, declarationsLodeUrl })
