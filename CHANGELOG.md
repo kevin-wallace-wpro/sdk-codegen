@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.22.0](https://www.github.com/looker-open-source/sdk-codegen/compare/sdk-codegen-all-v1.21.1...sdk-codegen-all-v1.22.0) (2022-02-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* SDK support for 22.0
+
+### Features
+
+* Added 4.0 GA stable banner to api explorer ([#956](https://www.github.com/looker-open-source/sdk-codegen/issues/956)) ([c59b5d4](https://www.github.com/looker-open-source/sdk-codegen/commit/c59b5d4d14189329fd9d95b31d3801dd27bd1c08))
+* Added unit test CI for Go SDK changes ([#965](https://www.github.com/looker-open-source/sdk-codegen/issues/965)) ([47a52dd](https://www.github.com/looker-open-source/sdk-codegen/commit/47a52dddd61cf1264ad0ea02b17e763e510bbd6c))
+* fuzzy JSON value handling for the Swift SDK ([#961](https://www.github.com/looker-open-source/sdk-codegen/issues/961)) ([0b6b696](https://www.github.com/looker-open-source/sdk-codegen/commit/0b6b696742d67d1abc0cf69dfbf820f5a28d0f86))
+* SDK build for 22.0. ([#959](https://www.github.com/looker-open-source/sdk-codegen/issues/959)) ([de651b3](https://www.github.com/looker-open-source/sdk-codegen/commit/de651b373978fd3689429c0cbdb364a2820fe211))
+* SDK support for 22.0 ([5f9930c](https://www.github.com/looker-open-source/sdk-codegen/commit/5f9930c0b0f7bde59f0b9b47f882ae1f3ff9e490))
+
+
+### Bug Fixes
+
+* Fix broken apix test because of 22.0 build ([#968](https://www.github.com/looker-open-source/sdk-codegen/issues/968)) ([45a9a69](https://www.github.com/looker-open-source/sdk-codegen/commit/45a9a6915be0fbcfdbd3ee6152a59d9d8728b3ca))
+
 ### [1.21.1](https://www.github.com/looker-open-source/sdk-codegen/compare/sdk-codegen-all-v1.18.0...sdk-codegen-all-v1.21.1) (2022-01-27)
 
 
